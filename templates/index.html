@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Join</h1>
+    <input type="text" id="user" placeholder="Username">
+    <button type="button" id="join1">Room 1</button>
+    <button type="button" id="join2">Room 2</button>
+    <h1>Chat</h1>
+    <br>
+    <ul id="buff"></ul>
+    <input type="text" id="msg">
+    <button type="button" id="send">Send</button>
+    <button type="button" id="leave">Leave Room</button>
+    <br><br>
+    <h1>Users</h1>
+    <ul id="uList"></ul>
+
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!-- SocketIO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+        const socket = io();
+        var room = 'general';
+        var uName = 'User';
+        socket.on('connect', function() {
+            socket.emit('my event', {data: 'I\'m connected!'});
+            socket.emit('first_join', { username: uName, room: room});
+        });
+
+        socket.on('message', function (msg) {
+            $('#buff').append('<li>' + msg + '</li>');
+        }) 
+
+        $('#send').on('click', function () {
+            // socket.send($('#msg').val());
+            socket.emit('message', { username: uName, room: room, data: $('#msg').val()});
+            $('#msg').val('');
+        })
+
+        $('#join1').on('click', function () {
+            socket.emit('leave', { username: uName, room: room });
+            uName = $('#user').val();
+            room = 'room 1';
+            socket.emit('join', { username: uName, room: room, data: $('#msg').val()});
+            $('#uList').append('<li id="' + uName + '">' + uName + '</li>');
+        })
+
+        $('#join2').on('click', function () {
+            socket.emit('leave', { username: uName, room: room });
+            uName = $('#user').val();
+            room = 'room 2'
+            socket.emit('join', { username: uName, room: room });
+            $('#uList').append('<li id="' + uName + '">' + uName + '</li>');
+
+        })
+
+        $('#leave').on('click', function () {
+            socket.emit('leave', { username: uName, room: room });
+            room = 'general';
+            socket.emit('join', { username: uName, room: room });
+            $('#' + uName).remove();
+        })
+    </script>
+</body>
+</html>
