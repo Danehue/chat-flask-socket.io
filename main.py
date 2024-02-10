@@ -40,6 +40,7 @@ def create_app():
     def test_disconnect():
         print('Client disconnected')
 
+
     # **********************************
     # ******* RECEIVING MESSAGES *******
     # **********************************    
