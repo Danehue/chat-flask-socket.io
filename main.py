@@ -48,8 +48,9 @@ def create_app():
     def handle_msg(data):
         room = data['room']
         msg = data['data']
+        user = data['username']
         send(msg, to=room)
-        data, count = supabase.table('messages').insert({"msg": msg}).execute()
+        data, count = supabase.table('messages').insert({"msg": msg, "user": user}).execute()
         
     @socketio.on('my event')
     def handle_json(json):
